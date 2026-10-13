@@ -36,7 +36,7 @@ interface InteractiveGraphProps {
   badgeForState?: (state: StateId) => string | undefined
   highlightStates?: Set<StateId>
   activeState?: StateId
-  takenEdge?: { from: StateId; to: StateId }
+  takenEdge?: { from: StateId; to: StateId; pulse?: number }
 }
 
 type Interaction =
@@ -422,6 +422,7 @@ export function InteractiveGraph({
               selected.has(edge.from) ||
               selected.has(edge.to) ||
               (takenEdge?.from === edge.from && takenEdge?.to === edge.to)
+            const taken = takenEdge?.from === edge.from && takenEdge?.to === edge.to
             const color = highlighted ? ACCENT : EDGE_COLOR
             const geometry =
               edge.from === edge.to ? selfLoopPath(a, radius) : curvedPath(a, b, radius, edge.curve)
@@ -435,6 +436,17 @@ export function InteractiveGraph({
                   markerEnd={`url(#${markerId})`}
                   style={{ color }}
                 />
+                {taken && takenEdge?.pulse !== undefined && (
+                  <path
+                    key={`pulse-${takenEdge.pulse}`}
+                    d={geometry.path}
+                    fill="none"
+                    stroke={ACCENT}
+                    strokeWidth={4}
+                    className="edge-traverse"
+                    pointerEvents="none"
+                  />
+                )}
                 <path
                   d={geometry.path}
                   fill="none"

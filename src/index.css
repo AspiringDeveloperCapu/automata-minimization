@@ -242,6 +242,21 @@ li.ring-2.step-enter {
   animation: drawer-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+@keyframes edge-traverse {
+  0% {
+    opacity: 0.85;
+    stroke-width: 4.5;
+  }
+  100% {
+    opacity: 0;
+    stroke-width: 2;
+  }
+}
+
+.edge-traverse {
+  animation: edge-traverse 0.55s ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .step-enter,
   li.ring-2.step-enter,
@@ -252,6 +267,11 @@ li.ring-2.step-enter {
 
   .drawer-enter {
     animation: none;
+  }
+
+  .edge-traverse {
+    animation: none;
+    opacity: 0;
   }
 
   .pf-token {

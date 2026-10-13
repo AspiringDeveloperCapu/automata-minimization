@@ -16,7 +16,7 @@ export interface Simulator {
   /** State the run is in after `cursor` consumed symbols. */
   activeState: StateId | undefined
   /** Transition being taken for the next step (the one just consumed). */
-  takenStep: { from: StateId; to: StateId } | undefined
+  takenStep: { from: StateId; to: StateId; pulse: number } | undefined
   sim: ReturnType<typeof simulate>
 }
 
@@ -66,7 +66,7 @@ export function useSimulator(dfa: DFA, speedMs = 650): Simulator {
   const previous = cursor > 0 ? steps[cursor - 1] : undefined
   const takenStep =
     previous && previous.ok && previous.target !== undefined
-      ? { from: previous.state, to: previous.target }
+      ? { from: previous.state, to: previous.target, pulse: cursor }
       : undefined
 
   return {
