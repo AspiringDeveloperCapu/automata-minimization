@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import App from './App'
@@ -13,14 +13,31 @@ function renderApp() {
 }
 
 describe('App', () => {
-  it('renders the editor, both graphs and a valid DFA for the default sample', () => {
+  it('renders the editor, the interactive graph and a valid DFA for the default sample', () => {
     renderApp()
     expect(screen.getByText('DFA Minimization')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Original state diagram' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('img', { name: 'Original to minimal state diagram' }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Original' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Minimized' })).toBeInTheDocument()
     expect(screen.getByText(/Valid DFA/i)).toBeInTheDocument()
+  })
+
+  it('switches the graph between the original and minimized DFA', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    await user.click(screen.getByRole('button', { name: 'Minimized' }))
+    expect(screen.getByRole('img', { name: 'Minimized state diagram' })).toBeInTheDocument()
+  })
+
+  it('simulates an input string against the automaton', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    const input = screen.getByRole('textbox', { name: /input string/i })
+    await user.type(input, 'aa')
+    const step = screen.getByRole('button', { name: /step simulation/i })
+    await user.click(step)
+    await user.click(step)
+    expect(screen.getByText('Accepted')).toBeInTheDocument()
   })
 
   it('shows the first refinement step and the animation panel', () => {
@@ -48,5 +65,22 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /download/i }))
     expect(screen.getByRole('dialog', { name: /result and export/i })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Minimized state diagram' })).toBeInTheDocument()
+  })
+
+  it('shows resizable separators for both side panels', () => {
+    renderApp()
+    expect(
+      screen.getByRole('separator', { name: /definitions panel/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('separator', { name: /animation panel/i })).toBeInTheDocument()
+  })
+
+  it('resizes a panel with the keyboard and persists the width', () => {
+    renderApp()
+    const right = screen.getByRole('separator', { name: /animation panel/i })
+    expect(right).toHaveAttribute('aria-valuenow', '400')
+    fireEvent.keyDown(right, { key: 'ArrowLeft' })
+    expect(right).toHaveAttribute('aria-valuenow', '416')
+    expect(window.localStorage.getItem('panel.right')).toBe('416')
   })
 })

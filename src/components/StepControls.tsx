@@ -8,7 +8,7 @@ interface StepControlsProps {
 }
 
 const iconButton =
-  'inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500'
+  'inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-muted transition hover:bg-elevated hover:text-ink disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-muted'
 
 export function StepControls({ playback, total, disabled = false }: StepControlsProps) {
   const { index, playing, atEnd, atStart } = playback
@@ -26,11 +26,11 @@ export function StepControls({ playback, total, disabled = false }: StepControls
         className="step-range w-32 sm:w-44"
       />
 
-      <span className="mono w-11 text-center text-xs tabular-nums text-slate-400">
+      <span className="mono w-11 text-center text-xs tabular-nums text-ink-faint">
         {total === 0 ? 0 : index + 1}/{total}
       </span>
 
-      <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+      <div className="flex items-center gap-0.5 rounded-lg border border-line bg-surface-1 p-1 shadow-sm">
         <button
           type="button"
           className={iconButton}
@@ -56,7 +56,7 @@ export function StepControls({ playback, total, disabled = false }: StepControls
           onClick={playback.toggle}
           disabled={disabled}
           aria-label={playing ? 'Pause' : atEnd ? 'Replay' : 'Play'}
-          className="inline-flex h-8 items-center gap-1.5 rounded-md bg-indigo-600 px-3 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex h-8 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-white shadow-sm transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
         >
           {playing ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
           <span className="hidden sm:inline">

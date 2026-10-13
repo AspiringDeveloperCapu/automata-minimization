@@ -37,28 +37,28 @@ export function ResultPanel({ original, minimized }: ResultPanelProps) {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-3 text-sm">
-        <span className="rounded-md bg-slate-100 px-2.5 py-1 text-slate-600">
+        <span className="rounded-md bg-elevated px-2.5 py-1 text-ink-muted">
           Original: <strong>{original.states.length}</strong> state(s)
         </span>
-        <span className="text-slate-400">→</span>
-        <span className="rounded-md bg-emerald-50 px-2.5 py-1 text-emerald-700">
+        <span className="text-ink-faint">→</span>
+        <span className="rounded-md bg-success/15 px-2.5 py-1 text-success">
           Minimal: <strong>{minimized.states.length}</strong> state(s)
         </span>
         {saved > 0 && (
-          <span className="text-xs text-slate-400">({saved} merged/removed)</span>
+          <span className="text-xs text-ink-faint">({saved} merged/removed)</span>
         )}
         <div className="ml-auto flex gap-2">
           <button
             type="button"
             onClick={copy}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+            className="rounded-lg border border-line bg-surface-1 px-3 py-1.5 text-sm font-medium text-ink-muted shadow-sm transition hover:border-line-strong hover:bg-elevated hover:text-ink"
           >
             {copied ? 'Copied!' : 'Copy JSON'}
           </button>
           <button
             type="button"
             onClick={download}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500"
+            className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-accent-hover"
           >
             Download JSON
           </button>
@@ -69,12 +69,12 @@ export function ResultPanel({ original, minimized }: ResultPanelProps) {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
-                <th className="border-b border-slate-200 px-2 py-2">State</th>
-                <th className="border-b border-slate-200 px-2 py-2 text-center">Start</th>
-                <th className="border-b border-slate-200 px-2 py-2 text-center">Accept</th>
+              <tr className="text-left text-xs uppercase tracking-wide text-ink-faint">
+                <th className="border-b border-line px-2 py-2">State</th>
+                <th className="border-b border-line px-2 py-2 text-center">Start</th>
+                <th className="border-b border-line px-2 py-2 text-center">Accept</th>
                 {minimized.alphabet.map((symbol) => (
-                  <th key={symbol} className="mono border-b border-slate-200 px-2 py-2 text-center">
+                  <th key={symbol} className="mono border-b border-line px-2 py-2 text-center">
                     {symbol}
                   </th>
                 ))}
@@ -82,18 +82,18 @@ export function ResultPanel({ original, minimized }: ResultPanelProps) {
             </thead>
             <tbody>
               {minimized.states.map((state) => (
-                <tr key={state} className="hover:bg-slate-50">
-                  <td className="mono border-b border-slate-100 px-2 py-1.5">{state}</td>
-                  <td className="border-b border-slate-100 px-2 py-1.5 text-center">
+                <tr key={state} className="transition hover:bg-elevated/60">
+                  <td className="mono border-b border-line/70 px-2 py-1.5">{state}</td>
+                  <td className="border-b border-line/70 px-2 py-1.5 text-center">
                     {minimized.start === state ? '→' : ''}
                   </td>
-                  <td className="border-b border-slate-100 px-2 py-1.5 text-center">
+                  <td className="border-b border-line/70 px-2 py-1.5 text-center">
                     {minimized.accepting.includes(state) ? '✓' : ''}
                   </td>
                   {minimized.alphabet.map((symbol) => (
                     <td
                       key={symbol}
-                      className="mono border-b border-slate-100 px-2 py-1.5 text-center"
+                      className="mono border-b border-line/70 px-2 py-1.5 text-center"
                     >
                       {minimized.transitions[state]?.[symbol] ?? '—'}
                     </td>
@@ -104,7 +104,7 @@ export function ResultPanel({ original, minimized }: ResultPanelProps) {
           </table>
         </div>
 
-        <div className="overflow-x-auto rounded-lg border border-slate-100 bg-slate-50/50 p-2">
+        <div className="overflow-x-auto rounded-lg border border-line bg-surface p-2">
           <Diagram
             dfa={minimized}
             ariaLabel="Minimized state diagram"

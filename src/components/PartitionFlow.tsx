@@ -14,6 +14,7 @@ const GAP_IN = 14
 const GAP_BETWEEN = 54
 const ROW_H = 60
 const PAD = 22
+const LABEL_W = 84
 
 const KIND_LABEL: Record<StepKind, string> = {
   unreachable: 'Preprocess',
@@ -67,11 +68,12 @@ function buildRows(steps: MinStep[], current: number) {
     return { step, positions, groups, rowWidth: Math.max(TOKEN_W, cursor - GAP_BETWEEN) }
   })
 
-  const width = Math.max(TOKEN_W, ...layouts.map((l) => l.rowWidth))
+  const contentWidth = Math.max(TOKEN_W, ...layouts.map((l) => l.rowWidth))
+  const width = contentWidth + LABEL_W
 
   const rows: Row[] = layouts.map((layout, rowIndex) => {
     const y = PAD + rowIndex * ROW_H
-    const offset = (width - layout.rowWidth) / 2
+    const offset = LABEL_W + (contentWidth - layout.rowWidth) / 2
     const tokens = layout.positions.map((p) => ({
       state: p.state,
       block: p.block,
@@ -150,17 +152,17 @@ export function PartitionFlow({ steps, current, dfa }: PartitionFlowProps) {
   return (
     <div>
       {removed.length > 0 && (
-        <div className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+        <div className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-ink-faint">
           <span className="font-medium">Removed (unreachable):</span>
           {removed.map((state) => (
-            <span key={state} className="mono rounded bg-slate-100 px-1.5 py-0.5 line-through">
+            <span key={state} className="mono rounded bg-elevated px-1.5 py-0.5 text-ink-muted line-through">
               {state}
             </span>
           ))}
         </div>
       )}
 
-      <div ref={scrollRef} className="max-h-[52vh] overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/40 p-3">
+      <div ref={scrollRef} className="max-h-[52vh] max-w-full overflow-auto rounded-xl border border-line bg-surface/40 p-3">
         <div className="relative mx-auto" style={{ width, height }}>
           {rows.map((row, rowIndex) => (
             <Fragment key={rowIndex}>
@@ -198,15 +200,15 @@ export function PartitionFlow({ steps, current, dfa }: PartitionFlowProps) {
       </div>
 
       {activeStep && (
-        <p className="mt-3 text-xs leading-relaxed text-slate-500">{activeStep.description}</p>
+        <p className="mt-3 text-xs leading-relaxed text-ink-muted">{activeStep.description}</p>
       )}
 
       {activeStep?.signatures && (
-        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="mt-3 rounded-xl border border-line bg-surface-1 p-3">
+          <div className="text-xs font-medium text-ink-faint">
             Signature — block reached on each symbol ({dfa.alphabet.join(', ')})
           </div>
-          <div className="mono mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
+          <div className="mono mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">
             {(activeStep.splitBlock ?? Object.keys(activeStep.signatures)).map((state) => (
               <span key={state}>
                 {state} → ({activeStep.signatures![state].map((n) => n + 1).join(', ')})

@@ -13,53 +13,53 @@ export function TransitionTable() {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
-              <th className="border-b border-slate-200 px-2 py-2">State</th>
-              <th className="border-b border-slate-200 px-2 py-2 text-center">Start</th>
-              <th className="border-b border-slate-200 px-2 py-2 text-center">Accept</th>
+            <tr className="text-left text-xs uppercase tracking-wide text-ink-faint">
+              <th className="border-b border-line px-2 py-2">State</th>
+              <th className="border-b border-line px-2 py-2 text-center">Start</th>
+              <th className="border-b border-line px-2 py-2 text-center">Accept</th>
               {dfa.alphabet.map((symbol) => (
-                <th key={symbol} className="mono border-b border-slate-200 px-2 py-2 text-center">
+                <th key={symbol} className="mono border-b border-line px-2 py-2 text-center">
                   {symbol}
                 </th>
               ))}
-              <th className="border-b border-slate-200 px-2 py-2" />
+              <th className="border-b border-line px-2 py-2" />
             </tr>
           </thead>
           <tbody>
             {dfa.states.map((state) => (
-              <tr key={state} className="group transition hover:bg-slate-50">
-                <td className="border-b border-slate-100 px-1 py-1">
+              <tr key={state} className="group transition hover:bg-elevated/60">
+                <td className="border-b border-line/70 px-1 py-1">
                   <CommitInput
                     value={state}
                     ariaLabel={`State name ${state}`}
                     onCommit={(to) => dispatch({ type: 'renameState', from: state, to })}
-                    className="mono w-24 rounded-lg border border-transparent bg-transparent px-1.5 py-1 transition hover:border-slate-200 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="mono w-24 rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-ink transition hover:border-line focus:border-accent focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/25"
                   />
                 </td>
-                <td className="border-b border-slate-100 px-2 py-1 text-center">
+                <td className="border-b border-line/70 px-2 py-1 text-center">
                   <input
                     type="radio"
                     name="start-state"
                     aria-label={`Set ${state} as start`}
                     checked={dfa.start === state}
                     onChange={() => dispatch({ type: 'setStart', state })}
-                    className="accent-indigo-600"
+                    className="accent-[#8875ff]"
                   />
                 </td>
-                <td className="border-b border-slate-100 px-2 py-1 text-center">
+                <td className="border-b border-line/70 px-2 py-1 text-center">
                   <input
                     type="checkbox"
                     aria-label={`Toggle accept for ${state}`}
                     checked={dfa.accepting.includes(state)}
                     onChange={() => dispatch({ type: 'toggleAccept', state })}
-                    className="accent-emerald-600"
+                    className="accent-[#44cf6e]"
                   />
                 </td>
                 {dfa.alphabet.map((symbol) => {
                   const target = dfa.transitions[state]?.[symbol] ?? ''
                   const invalid = target !== '' && !dfa.states.includes(target)
                   return (
-                    <td key={symbol} className="border-b border-slate-100 px-1 py-1 text-center">
+                    <td key={symbol} className="border-b border-line/70 px-1 py-1 text-center">
                       <select
                         value={target}
                         aria-label={`Transition from ${state} on ${symbol}`}
@@ -73,10 +73,10 @@ export function TransitionTable() {
                         }
                         className={`mono w-20 rounded-lg border px-1.5 py-1 text-sm transition focus:outline-none focus:ring-2 ${
                           target === ''
-                            ? 'border-red-200 bg-red-50 text-red-500 focus:ring-red-500/20'
+                            ? 'border-danger/50 bg-danger/10 text-danger focus:ring-danger/25'
                             : invalid
-                              ? 'border-amber-200 bg-amber-50 focus:ring-amber-500/20'
-                              : 'border-slate-200 bg-white focus:border-indigo-500 focus:ring-indigo-500/20'
+                              ? 'border-warning/50 bg-warning/10 text-warning focus:ring-warning/25'
+                              : 'border-line bg-surface text-ink focus:border-accent focus:ring-accent/25'
                         }`}
                       >
                         <option value="">—</option>
@@ -90,13 +90,13 @@ export function TransitionTable() {
                     </td>
                   )
                 })}
-                <td className="border-b border-slate-100 px-1 py-1 text-center">
+                <td className="border-b border-line/70 px-1 py-1 text-center">
                   <button
                     type="button"
                     aria-label={`Remove state ${state}`}
                     disabled={dfa.states.length <= 1}
                     onClick={() => dispatch({ type: 'removeState', state: state as StateId })}
-                    className="rounded px-1.5 text-slate-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500 disabled:opacity-20"
+                    className="rounded px-1.5 text-ink-faint opacity-0 transition group-hover:opacity-100 hover:text-danger disabled:opacity-20"
                   >
                     ×
                   </button>
@@ -110,7 +110,7 @@ export function TransitionTable() {
       <button
         type="button"
         onClick={() => dispatch({ type: 'addState' })}
-        className="mt-3 rounded-lg border border-dashed border-slate-300 px-3 py-1.5 text-sm text-slate-500 transition hover:border-indigo-400 hover:text-indigo-600"
+        className="mt-3 rounded-lg border border-dashed border-line-strong px-3 py-1.5 text-sm text-ink-muted transition hover:border-accent hover:text-accent"
       >
         + state
       </button>

@@ -1,7 +1,25 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-surface: #1c1c1c;
+  --color-surface-1: #232323;
+  --color-surface-2: #282828;
+  --color-elevated: #2e2e2e;
+  --color-line: #333333;
+  --color-line-strong: #3f3f3f;
+  --color-ink: #dadada;
+  --color-ink-muted: #b3b3b3;
+  --color-ink-faint: #7a7a7a;
+  --color-accent: #8875ff;
+  --color-accent-hover: #9d8dff;
+  --color-danger: #fb464c;
+  --color-success: #44cf6e;
+  --color-warning: #e9973f;
+  --color-info: #027aff;
+}
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 html,
@@ -12,12 +30,8 @@ body,
 
 body {
   margin: 0;
-  background-color: #f8fafc;
-  background-image:
-    radial-gradient(900px 480px at 8% -8%, rgba(99, 102, 241, 0.09), transparent 60%),
-    radial-gradient(820px 440px at 100% 0%, rgba(139, 92, 246, 0.07), transparent 55%);
-  background-attachment: fixed;
-  color: #1e293b;
+  background-color: #1c1c1c;
+  color: #dadada;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -26,9 +40,13 @@ body {
     Arial, sans-serif;
 }
 
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #3f3f3f transparent;
 }
 
 *::-webkit-scrollbar {
@@ -41,14 +59,40 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: #3f3f3f;
   border: 2px solid transparent;
   background-clip: content-box;
   border-radius: 9999px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
+  background-color: #555555;
+}
+
+/* Obsidian Canvas dot grid. Size/position are driven inline by the pan/zoom. */
+.canvas-grid {
+  background-color: #1c1c1c;
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.12) 1.1px,
+    transparent 1.1px
+  );
+}
+
+.canvas-cursor-pan {
+  cursor: grab;
+}
+
+.canvas-cursor-panning {
+  cursor: grabbing;
+}
+
+.canvas-node-hit {
+  cursor: grab;
+}
+
+.canvas-node-hit:active {
+  cursor: grabbing;
 }
 
 .step-range {
@@ -56,7 +100,7 @@ body {
   appearance: none;
   height: 4px;
   border-radius: 9999px;
-  background: #e2e8f0;
+  background: #3f3f3f;
   outline: none;
   cursor: pointer;
 }
@@ -72,32 +116,28 @@ body {
   width: 14px;
   height: 14px;
   border-radius: 9999px;
-  background: #4f46e5;
-  border: 2px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.4);
+  background: #8875ff;
+  border: 2px solid #1c1c1c;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .step-range::-moz-range-thumb {
   width: 14px;
   height: 14px;
   border-radius: 9999px;
-  background: #4f46e5;
-  border: 2px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.4);
+  background: #8875ff;
+  border: 2px solid #1c1c1c;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .step-range:disabled::-webkit-slider-thumb {
-  background: #94a3b8;
+  background: #555555;
   box-shadow: none;
 }
 
 .step-range:disabled::-moz-range-thumb {
-  background: #94a3b8;
+  background: #555555;
   box-shadow: none;
-}
-
-.mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 @keyframes step-enter {
@@ -145,22 +185,6 @@ li.ring-2.step-enter {
   animation: chip-pop 260ms ease-out;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .step-enter,
-  li.ring-2.step-enter,
-  .chip-pop {
-    animation: none;
-  }
-}
-
-svg circle,
-svg text {
-  transition:
-    fill 400ms ease,
-    stroke 400ms ease,
-    opacity 400ms ease;
-}
-
 .pf-token {
   position: absolute;
   top: 0;
@@ -192,18 +216,8 @@ svg text {
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: #7a7a7a;
   transition: opacity 300ms ease;
-}
-
-.morph-node {
-  transition:
-    transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 520ms ease;
-}
-
-.morph-fade {
-  transition: opacity 520ms ease;
 }
 
 @keyframes pf-fade {
@@ -240,11 +254,20 @@ svg text {
     animation: none;
   }
 
-  .pf-token,
-  .morph-node,
-  .morph-fade,
+  .pf-token {
+    transition: none;
+  }
+
   svg circle,
   svg text {
     transition: none;
   }
+}
+
+svg circle,
+svg text {
+  transition:
+    fill 400ms ease,
+    stroke 400ms ease,
+    opacity 400ms ease;
 }

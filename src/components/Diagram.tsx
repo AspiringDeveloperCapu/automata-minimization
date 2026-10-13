@@ -2,7 +2,14 @@ import { useId, useMemo } from 'react'
 import type { DFA, StateId } from '../types/dfa'
 import { layoutDfa } from '../lib/layout'
 import { curvedPath, groupEdges, selfLoopPath } from '../lib/edgeGeometry'
-import { HIGHLIGHT_STROKE, NEUTRAL_COLOR, type BlockColor } from '../lib/palette'
+import {
+  EDGE_COLOR,
+  EDGE_HALO_COLOR,
+  EDGE_LABEL_COLOR,
+  HIGHLIGHT_STROKE,
+  NEUTRAL_COLOR,
+  type BlockColor,
+} from '../lib/palette'
 
 interface DiagramProps {
   dfa: DFA
@@ -41,7 +48,7 @@ export function Diagram({
           markerHeight="7"
           orient="auto-start-reverse"
         >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+          <path d="M 0 0 L 10 5 L 0 10 z" fill={EDGE_COLOR} />
         </marker>
       </defs>
 
@@ -58,7 +65,7 @@ export function Diagram({
             <path
               d={geometry.path}
               fill="none"
-              stroke="#475569"
+              stroke={EDGE_COLOR}
               strokeWidth={1.6}
               markerEnd={`url(#${markerId})`}
             />
@@ -69,8 +76,8 @@ export function Diagram({
               dominantBaseline="central"
               fontSize={11}
               className="mono"
-              fill="#334155"
-              stroke="#ffffff"
+              fill={EDGE_LABEL_COLOR}
+              stroke={EDGE_HALO_COLOR}
               strokeWidth={3}
               paintOrder="stroke"
             >
@@ -96,7 +103,7 @@ export function Diagram({
                 y1={node.y}
                 x2={node.x - radius - 4}
                 y2={node.y}
-                stroke="#475569"
+                stroke={EDGE_COLOR}
                 strokeWidth={1.6}
                 markerEnd={`url(#${markerId})`}
               />
@@ -137,7 +144,7 @@ export function Diagram({
                   cx={node.x + radius * 0.82}
                   cy={node.y - radius * 0.82}
                   r={9}
-                  fill="#ffffff"
+                  fill={EDGE_HALO_COLOR}
                   style={{ stroke: color.stroke }}
                   strokeWidth={1.5}
                 />

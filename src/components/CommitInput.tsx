@@ -38,7 +38,7 @@ export function CommitInput({ value, onCommit, className, ariaLabel }: CommitInp
       }}
       className={
         className ??
-        'w-full rounded border border-transparent bg-transparent px-1.5 py-1 text-sm hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:outline-none'
+        'w-full rounded border border-transparent bg-transparent px-1.5 py-1 text-sm text-ink hover:border-line-strong focus:border-accent focus:bg-surface focus:outline-none'
       }
     />
   )
