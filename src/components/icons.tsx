@@ -98,14 +98,19 @@ export function CloseIcon(props: IconProps) {
   )
 }
 
-export function LogoIcon(props: IconProps) {
+export function MenuIcon(props: IconProps) {
   return (
     <svg {...strokeProps} {...props} aria-hidden="true">
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M9 10.5 14.5 8M14.5 8 13 14M13 14 9 10.5" strokeWidth={1.5} opacity={0.9} />
-      <circle cx="9" cy="10.5" r="1.6" fill="currentColor" stroke="none" />
-      <circle cx="14.5" cy="8" r="1.6" fill="currentColor" stroke="none" />
-      <circle cx="13" cy="14" r="1.6" fill="currentColor" stroke="none" />
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  )
+}
+
+export function PanelIcon(props: IconProps) {
+  return (
+    <svg {...strokeProps} {...props} aria-hidden="true">
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+      <path d="M14.5 4.5v15" />
     </svg>
   )
 }

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import App from './App'
@@ -13,13 +13,51 @@ function renderApp() {
 }
 
 describe('App', () => {
-  it('renders the editor, the interactive graph and a valid DFA for the default sample', () => {
+  it('renders the interactive graph and a valid DFA for the default sample', () => {
     renderApp()
     expect(screen.getByText('DFA Minimization')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Original state diagram' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Original' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Minimized' })).toBeInTheDocument()
     expect(screen.getByText(/Valid DFA/i)).toBeInTheDocument()
+  })
+
+  it('opens the definition editor as a drawer with the JSON import', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    expect(
+      screen.queryByRole('dialog', { name: /definition editor/i }),
+    ).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /open definition editor/i }))
+    const drawer = screen.getByRole('dialog', { name: /definition editor/i })
+    expect(drawer).toBeInTheDocument()
+    expect(within(drawer).getByText(/Load a sample/i)).toBeInTheDocument()
+    expect(within(drawer).getByLabelText(/Transition from q0 on a/i)).toBeInTheDocument()
+    expect(within(drawer).getByRole('button', { name: /import json/i })).toBeInTheDocument()
+
+    await user.keyboard('{Escape}')
+    expect(
+      screen.queryByRole('dialog', { name: /definition editor/i }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('toggles the partition refinement panel', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    expect(
+      screen.getByRole('heading', { name: /Partition refinement/i }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /hide partition panel/i }))
+    expect(
+      screen.queryByRole('heading', { name: /Partition refinement/i }),
+    ).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /show partition panel/i }))
+    expect(
+      screen.getByRole('heading', { name: /Partition refinement/i }),
+    ).toBeInTheDocument()
   })
 
   it('switches the graph between the original and minimized DFA', async () => {
@@ -67,11 +105,8 @@ describe('App', () => {
     expect(screen.getByRole('img', { name: 'Minimized state diagram' })).toBeInTheDocument()
   })
 
-  it('shows resizable separators for both side panels', () => {
+  it('shows a resizable separator for the partition panel', () => {
     renderApp()
-    expect(
-      screen.getByRole('separator', { name: /definitions panel/i }),
-    ).toBeInTheDocument()
     expect(screen.getByRole('separator', { name: /animation panel/i })).toBeInTheDocument()
   })
 

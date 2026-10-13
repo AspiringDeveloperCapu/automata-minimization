@@ -6,6 +6,12 @@ Obsidian-style canvas graph, and input-string simulation.
 
 ## Features
 
+- **Overlay editor drawer** — the transition table editor lives in a
+  Flutter-style left drawer: open it with the hamburger button in the top bar,
+  and dismiss it via the scrim, the close button, or `Escape`. The main content
+  keeps the full width while the drawer is closed.
+- **Collapsible partition panel** — the right-hand partition-refinement panel
+  can be toggled from the top bar, so the two state diagrams can go full screen.
 - **Transition table editor** — add/remove states and alphabet symbols, edit
   names, mark the start state, toggle accepting states, and set every
   transition with dropdowns.
