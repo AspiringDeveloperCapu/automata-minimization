@@ -1,98 +1,39 @@
-import { useMemo } from 'react'
+import { useId, useMemo } from 'react'
 import type { DFA, StateId } from '../types/dfa'
 import { layoutDfa } from '../lib/layout'
-import type { LaidOutNode } from '../lib/layout'
-import {
-  HIGHLIGHT_STROKE,
-  NEUTRAL_COLOR,
-  type BlockColor,
-} from '../lib/palette'
+import { curvedPath, groupEdges, selfLoopPath } from '../lib/edgeGeometry'
+import { HIGHLIGHT_STROKE, NEUTRAL_COLOR, type BlockColor } from '../lib/palette'
 
 interface DiagramProps {
   dfa: DFA
   colorForState?: (state: StateId) => BlockColor
   badgeForState?: (state: StateId) => string | undefined
   highlightStates?: Set<StateId>
+  ariaLabel?: string
 }
 
-interface EdgeGroup {
-  from: StateId
-  to: StateId
-  symbols: string[]
-}
-
-function anchor(point: { x: number; y: number }, toward: { x: number; y: number }, radius: number) {
-  const dx = toward.x - point.x
-  const dy = toward.y - point.y
-  const dist = Math.hypot(dx, dy) || 1
-  return { x: point.x + (dx / dist) * radius, y: point.y + (dy / dist) * radius }
-}
-
-function curvedPath(a: LaidOutNode, b: LaidOutNode, radius: number, curve: number) {
-  const midX = (a.x + b.x) / 2
-  const midY = (a.y + b.y) / 2
-  const dx = b.x - a.x
-  const dy = b.y - a.y
-  const dist = Math.hypot(dx, dy) || 1
-  const perpX = -dy / dist
-  const perpY = dx / dist
-  const control = { x: midX + perpX * curve, y: midY + perpY * curve }
-  const start = anchor(a, control, radius + 2)
-  const end = anchor(b, control, radius + 10)
-  return {
-    path: `M ${start.x} ${start.y} Q ${control.x} ${control.y} ${end.x} ${end.y}`,
-    label: {
-      x: (start.x + end.x + control.x) / 3,
-      y: (start.y + end.y + control.y) / 3,
-    },
-  }
-}
-
-function selfLoopPath(node: LaidOutNode, radius: number) {
-  const r = radius * 1.7
-  const start = { x: node.x - radius * 0.6, y: node.y - radius * 0.75 }
-  const end = { x: node.x + radius * 0.6, y: node.y - radius * 0.75 }
-  return {
-    path: `M ${start.x} ${start.y} A ${r} ${r} 0 1 1 ${end.x} ${end.y}`,
-    label: { x: node.x, y: node.y - radius - 42 },
-  }
-}
-
-export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: DiagramProps) {
+export function Diagram({
+  dfa,
+  colorForState,
+  badgeForState,
+  highlightStates,
+  ariaLabel = 'State diagram',
+}: DiagramProps) {
   const layout = useMemo(() => layoutDfa(dfa), [dfa])
+  const edges = useMemo(() => groupEdges(dfa), [dfa])
   const { byState, radius } = layout
-
-  const edges = useMemo(() => {
-    const groups = new Map<string, EdgeGroup>()
-    for (const from of dfa.states) {
-      if (!byState[from]) continue
-      for (const symbol of dfa.alphabet) {
-        const to = dfa.transitions[from]?.[symbol]
-        if (to === undefined || !byState[to]) continue
-        const key = `${from}\u0000${to}`
-        const existing = groups.get(key)
-        if (existing) existing.symbols.push(symbol)
-        else groups.set(key, { from, to, symbols: [symbol] })
-      }
-    }
-    const hasReverse = new Set<string>()
-    for (const g of groups.values()) hasReverse.add(`${g.to}\u0000${g.from}`)
-    return [...groups.values()].map((g) => ({
-      ...g,
-      curve: g.from !== g.to && hasReverse.has(`${g.from}\u0000${g.to}`) ? 30 : 0,
-    }))
-  }, [dfa, byState])
+  const markerId = `arrow-${useId().replace(/:/g, '')}`
 
   return (
     <svg
       viewBox={`0 0 ${layout.width} ${layout.height}`}
       className="h-auto w-full"
       role="img"
-      aria-label="State diagram"
+      aria-label={ariaLabel}
     >
       <defs>
         <marker
-          id="dfa-arrow"
+          id={markerId}
           viewBox="0 0 10 10"
           refX="9"
           refY="5"
@@ -107,6 +48,7 @@ export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: 
       {edges.map((edge) => {
         const a = byState[edge.from]
         const b = byState[edge.to]
+        if (!a || !b) return null
         const geometry =
           edge.from === edge.to
             ? selfLoopPath(a, radius)
@@ -118,7 +60,7 @@ export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: 
               fill="none"
               stroke="#475569"
               strokeWidth={1.6}
-              markerEnd="url(#dfa-arrow)"
+              markerEnd={`url(#${markerId})`}
             />
             <text
               x={geometry.label.x}
@@ -156,15 +98,14 @@ export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: 
                 y2={node.y}
                 stroke="#475569"
                 strokeWidth={1.6}
-                markerEnd="url(#dfa-arrow)"
+                markerEnd={`url(#${markerId})`}
               />
             )}
             <circle
               cx={node.x}
               cy={node.y}
               r={radius}
-              fill={color.fill}
-              stroke={stroke}
+              style={{ fill: color.fill, stroke }}
               strokeWidth={highlighted ? 3 : 2}
               strokeDasharray={node.reachable ? undefined : '5 4'}
             />
@@ -174,7 +115,7 @@ export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: 
                 cy={node.y}
                 r={radius - 5}
                 fill="none"
-                stroke={stroke}
+                style={{ stroke }}
                 strokeWidth={1.5}
                 strokeDasharray={node.reachable ? undefined : '4 3'}
               />
@@ -186,7 +127,7 @@ export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: 
               dominantBaseline="central"
               fontSize={fontSize}
               className="mono"
-              fill={color.text}
+              style={{ fill: color.text }}
             >
               {node.state}
             </text>
@@ -197,7 +138,7 @@ export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: 
                   cy={node.y - radius * 0.82}
                   r={9}
                   fill="#ffffff"
-                  stroke={color.stroke}
+                  style={{ stroke: color.stroke }}
                   strokeWidth={1.5}
                 />
                 <text
@@ -206,7 +147,7 @@ export function Diagram({ dfa, colorForState, badgeForState, highlightStates }: 
                   textAnchor="middle"
                   dominantBaseline="central"
                   fontSize={10}
-                  fill={color.stroke}
+                  style={{ fill: color.stroke }}
                 >
                   {badge}
                 </text>

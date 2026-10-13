@@ -27,13 +27,13 @@ export function TransitionTable() {
           </thead>
           <tbody>
             {dfa.states.map((state) => (
-              <tr key={state} className="group hover:bg-slate-50">
+              <tr key={state} className="group transition hover:bg-slate-50">
                 <td className="border-b border-slate-100 px-1 py-1">
                   <CommitInput
                     value={state}
                     ariaLabel={`State name ${state}`}
                     onCommit={(to) => dispatch({ type: 'renameState', from: state, to })}
-                    className="mono w-24 rounded border border-transparent bg-transparent px-1.5 py-1 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:outline-none"
+                    className="mono w-24 rounded-lg border border-transparent bg-transparent px-1.5 py-1 transition hover:border-slate-200 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </td>
                 <td className="border-b border-slate-100 px-2 py-1 text-center">
@@ -43,7 +43,7 @@ export function TransitionTable() {
                     aria-label={`Set ${state} as start`}
                     checked={dfa.start === state}
                     onChange={() => dispatch({ type: 'setStart', state })}
-                    className="accent-blue-600"
+                    className="accent-indigo-600"
                   />
                 </td>
                 <td className="border-b border-slate-100 px-2 py-1 text-center">
@@ -71,12 +71,12 @@ export function TransitionTable() {
                             target: event.target.value,
                           })
                         }
-                        className={`mono w-20 rounded border px-1.5 py-1 text-sm focus:outline-none ${
+                        className={`mono w-20 rounded-lg border px-1.5 py-1 text-sm transition focus:outline-none focus:ring-2 ${
                           target === ''
-                            ? 'border-red-300 bg-red-50 text-red-500'
+                            ? 'border-red-200 bg-red-50 text-red-500 focus:ring-red-500/20'
                             : invalid
-                              ? 'border-amber-300 bg-amber-50'
-                              : 'border-slate-300 bg-white'
+                              ? 'border-amber-200 bg-amber-50 focus:ring-amber-500/20'
+                              : 'border-slate-200 bg-white focus:border-indigo-500 focus:ring-indigo-500/20'
                         }`}
                       >
                         <option value="">—</option>
@@ -110,7 +110,7 @@ export function TransitionTable() {
       <button
         type="button"
         onClick={() => dispatch({ type: 'addState' })}
-        className="mt-3 rounded-md border border-dashed border-slate-300 px-3 py-1.5 text-sm text-slate-500 hover:border-blue-400 hover:text-blue-600"
+        className="mt-3 rounded-lg border border-dashed border-slate-300 px-3 py-1.5 text-sm text-slate-500 transition hover:border-indigo-400 hover:text-indigo-600"
       >
         + state
       </button>
