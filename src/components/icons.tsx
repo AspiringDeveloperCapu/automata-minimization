@@ -114,3 +114,39 @@ export function PanelIcon(props: IconProps) {
     </svg>
   )
 }
+
+export function ArrowTopIcon(props: IconProps) {
+  return (
+    <svg {...strokeProps} {...props} aria-hidden="true">
+      <path d="M12 19V5" />
+      <path d="m5 12 7-7 7 7" />
+    </svg>
+  )
+}
+
+export function ArrowBottomIcon(props: IconProps) {
+  return (
+    <svg {...strokeProps} {...props} aria-hidden="true">
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </svg>
+  )
+}
+
+export function ArrowLeftIcon(props: IconProps) {
+  return (
+    <svg {...strokeProps} {...props} aria-hidden="true">
+      <path d="M19 12H5" />
+      <path d="m12 19-7-7 7-7" />
+    </svg>
+  )
+}
+
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <svg {...strokeProps} {...props} aria-hidden="true">
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
+  )
+}

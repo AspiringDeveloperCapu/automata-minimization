@@ -9,7 +9,7 @@ interface TopBarProps {
   valid: boolean
   errorCount: number
   panelVisible: boolean
-  onOpenEditor: () => void
+  onToggleEditor: () => void
   onOpenResult: () => void
   onTogglePanel: () => void
 }
@@ -21,7 +21,7 @@ export function TopBar({
   valid,
   errorCount,
   panelVisible,
-  onOpenEditor,
+  onToggleEditor,
   onOpenResult,
   onTogglePanel,
 }: TopBarProps) {
@@ -29,8 +29,8 @@ export function TopBar({
     <nav className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-surface/80 px-4 py-2.5 backdrop-blur-sm">
       <button
         type="button"
-        onClick={onOpenEditor}
-        aria-label="Open definition editor"
+        onClick={onToggleEditor}
+        aria-label="Toggle definition editor"
         title="Definition editor"
         className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-muted transition hover:bg-elevated hover:text-ink"
       >

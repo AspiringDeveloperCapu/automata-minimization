@@ -7,8 +7,9 @@ interface ResizerProps {
   defaultValue: number
   onChange: (value: number) => void
   onReset?: () => void
-  /** When true, dragging right decreases the width (for a right-hand panel). */
+  /** When true, dragging away from the panel decreases its size. */
   invert?: boolean
+  orientation?: 'vertical' | 'horizontal'
   label: string
 }
 
@@ -20,14 +21,17 @@ export function Resizer({
   onChange,
   onReset,
   invert = false,
+  orientation = 'vertical',
   label,
 }: ResizerProps) {
-  const startRef = useRef<{ x: number; width: number } | null>(null)
+  const startRef = useRef<{ axis: number; size: number } | null>(null)
   const [dragging, setDragging] = useState(false)
 
+  const horizontal = orientation === 'horizontal'
+
   const applyDelta = useCallback(
-    (deltaX: number, from: number) => {
-      const raw = from + (invert ? -deltaX : deltaX)
+    (delta: number, from: number) => {
+      const raw = from + (invert ? -delta : delta)
       onChange(raw)
     },
     [invert, onChange],
@@ -37,14 +41,15 @@ export function Resizer({
     if (event.button !== 0) return
     event.preventDefault()
     event.currentTarget.setPointerCapture(event.pointerId)
-    startRef.current = { x: event.clientX, width: value }
+    startRef.current = { axis: horizontal ? event.clientY : event.clientX, size: value }
     setDragging(true)
   }
 
   const handlePointerMove = (event: React.PointerEvent) => {
     const start = startRef.current
     if (!start) return
-    applyDelta(event.clientX - start.x, start.width)
+    const axis = horizontal ? event.clientY : event.clientX
+    applyDelta(axis - start.axis, start.size)
   }
 
   const endDrag = (event: React.PointerEvent) => {
@@ -56,17 +61,23 @@ export function Resizer({
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+    const decreaseKey = horizontal ? 'ArrowUp' : 'ArrowLeft'
+    const increaseKey = horizontal ? 'ArrowDown' : 'ArrowRight'
+    if (event.key !== decreaseKey && event.key !== increaseKey) return
     event.preventDefault()
     const step = event.shiftKey ? 48 : 16
-    const signedStep = event.key === 'ArrowRight' ? step : -step
+    const signedStep = event.key === increaseKey ? step : -step
     applyDelta(signedStep, value)
   }
+
+  const orientationClass = horizontal
+    ? `relative hidden h-px w-full cursor-row-resize touch-none bg-line transition-colors after:absolute after:-bottom-1.5 after:-top-1.5 after:inset-x-0 after:content-[''] hover:bg-accent/60 focus-visible:bg-accent data-[dragging]:bg-accent lg:block`
+    : `relative hidden w-px shrink-0 cursor-col-resize touch-none bg-line transition-colors after:absolute after:inset-y-0 after:-left-1.5 after:-right-1.5 after:content-[''] hover:bg-accent/60 focus-visible:bg-accent data-[dragging]:bg-accent lg:block`
 
   return (
     <div
       role="separator"
-      aria-orientation="vertical"
+      aria-orientation={horizontal ? 'horizontal' : 'vertical'}
       aria-label={label}
       aria-valuenow={Math.round(value)}
       aria-valuemin={min}
@@ -79,8 +90,8 @@ export function Resizer({
       onPointerCancel={endDrag}
       onKeyDown={handleKeyDown}
       onDoubleClick={() => (onReset ? onReset() : onChange(defaultValue))}
-      title={`${label} — drag or use ←/→ to resize, double-click to reset`}
-      className="relative hidden w-px shrink-0 cursor-col-resize touch-none bg-line outline-none transition-colors after:absolute after:inset-y-0 after:-left-1.5 after:-right-1.5 after:content-[''] hover:bg-accent/60 focus-visible:bg-accent data-[dragging]:bg-accent lg:block"
+      title={`${label} — drag or use arrow keys to resize, double-click to reset`}
+      className={`shrink-0 outline-none ${orientationClass}`}
     />
   )
 }

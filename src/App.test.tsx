@@ -5,6 +5,7 @@ import App from './App'
 import { AutomatonProvider } from './context/AutomatonProvider'
 
 function renderApp() {
+  window.localStorage.clear()
   return render(
     <AutomatonProvider>
       <App />
@@ -22,24 +23,50 @@ describe('App', () => {
     expect(screen.getByText(/Valid DFA/i)).toBeInTheDocument()
   })
 
-  it('opens the definition editor as a drawer with the JSON import', async () => {
+  it('toggles the definition editor as a docked panel with the JSON import', async () => {
     const user = userEvent.setup()
     renderApp()
     expect(
-      screen.queryByRole('dialog', { name: /definition editor/i }),
+      screen.queryByRole('complementary', { name: /definition editor/i }),
     ).not.toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /open definition editor/i }))
-    const drawer = screen.getByRole('dialog', { name: /definition editor/i })
-    expect(drawer).toBeInTheDocument()
-    expect(within(drawer).getByText(/Load a sample/i)).toBeInTheDocument()
-    expect(within(drawer).getByLabelText(/Transition from q0 on a/i)).toBeInTheDocument()
-    expect(within(drawer).getByRole('button', { name: /import json/i })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /toggle definition editor/i }))
+    const editor = screen.getByRole('complementary', { name: /definition editor/i })
+    expect(editor).toHaveAttribute('data-dock', 'left')
+    expect(within(editor).getByText(/Load a sample/i)).toBeInTheDocument()
+    expect(within(editor).getByLabelText(/Transition from q0 on a/i)).toBeInTheDocument()
+    expect(within(editor).getByRole('button', { name: /import json/i })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Original state diagram' })).toBeInTheDocument()
 
     await user.keyboard('{Escape}')
     expect(
-      screen.queryByRole('dialog', { name: /definition editor/i }),
+      screen.queryByRole('complementary', { name: /definition editor/i }),
     ).not.toBeInTheDocument()
+  })
+
+  it('docks the editor at the top as a horizontal bar', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    await user.click(screen.getByRole('button', { name: /toggle definition editor/i }))
+    await user.click(screen.getByRole('button', { name: /dock definition editor at top/i }))
+    const editor = screen.getByRole('complementary', { name: /definition editor/i })
+    expect(editor).toHaveAttribute('data-dock', 'top')
+    expect(screen.getByRole('separator', { name: /resize editor bar/i })).toHaveAttribute(
+      'aria-orientation',
+      'horizontal',
+    )
+  })
+
+  it('docks the partition panel at the bottom', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    await user.click(screen.getByRole('button', { name: /dock partition refinement panel at bottom/i }))
+    const panel = screen.getByRole('complementary', { name: /partition refinement panel/i })
+    expect(panel).toHaveAttribute('data-dock', 'bottom')
+    expect(screen.getByRole('separator', { name: /resize partition bar/i })).toHaveAttribute(
+      'aria-orientation',
+      'horizontal',
+    )
   })
 
   it('toggles the partition refinement panel', async () => {
@@ -113,9 +140,24 @@ describe('App', () => {
   it('resizes a panel with the keyboard and persists the width', () => {
     renderApp()
     const right = screen.getByRole('separator', { name: /animation panel/i })
-    expect(right).toHaveAttribute('aria-valuenow', '400')
+    expect(right).toHaveAttribute('aria-valuenow', '520')
     fireEvent.keyDown(right, { key: 'ArrowLeft' })
-    expect(right).toHaveAttribute('aria-valuenow', '416')
-    expect(window.localStorage.getItem('panel.right')).toBe('416')
+    expect(right).toHaveAttribute('aria-valuenow', '536')
+    expect(window.localStorage.getItem('panel.right')).toBe('536')
+  })
+
+  it('clamps bar height so the graph stays reachable', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    await user.click(screen.getByRole('button', { name: /toggle definition editor/i }))
+    await user.click(screen.getByRole('button', { name: /dock definition editor at top/i }))
+    const resizer = screen.getByRole('separator', { name: /resize editor bar/i })
+    const max = Number(resizer.getAttribute('aria-valuemax'))
+    expect(max).toBeLessThan(window.innerHeight)
+    for (let i = 0; i < 40; i++) {
+      fireEvent.keyDown(resizer, { key: 'ArrowDown', shiftKey: true })
+    }
+    expect(Number(resizer.getAttribute('aria-valuenow'))).toBe(max)
+    expect(screen.getByRole('img', { name: 'Original state diagram' })).toBeInTheDocument()
   })
 })

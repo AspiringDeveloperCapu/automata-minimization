@@ -3,12 +3,16 @@ import type { StateId } from '../types/dfa'
 import { CommitInput } from './CommitInput'
 import { SymbolEditor } from './SymbolEditor'
 
-export function TransitionTable() {
+interface TransitionTableProps {
+  showSymbols?: boolean
+}
+
+export function TransitionTable({ showSymbols = true }: TransitionTableProps) {
   const { dfa, dispatch } = useAutomaton()
 
   return (
     <div>
-      <SymbolEditor />
+      {showSymbols && <SymbolEditor />}
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">

@@ -14,15 +14,10 @@ export function ResultDrawer({ open, onClose, original, minimized }: ResultDrawe
 
   return (
     <div className="fixed inset-0 z-40">
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-[1px]"
-        onClick={onClose}
-        aria-hidden="true"
-      />
       <aside
         role="dialog"
         aria-label="Result and export"
-        className="drawer-enter absolute left-0 top-0 flex h-full w-[min(460px,92vw)] flex-col overflow-y-auto border-r border-line bg-surface-2 shadow-2xl"
+        className="drawer-enter absolute left-0 top-0 flex h-full w-[min(560px,92vw)] flex-col overflow-y-auto border-r border-line bg-surface-2 shadow-2xl"
       >
         <header className="flex shrink-0 items-center justify-between border-b border-line px-4 py-3.5">
           <div>
