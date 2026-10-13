@@ -143,7 +143,7 @@ describe('App', () => {
     expect(right).toHaveAttribute('aria-valuenow', '520')
     fireEvent.keyDown(right, { key: 'ArrowLeft' })
     expect(right).toHaveAttribute('aria-valuenow', '536')
-    expect(window.localStorage.getItem('panel.right')).toBe('536')
+    expect(window.localStorage.getItem('layout.v2.panel.width')).toBe('536')
   })
 
   it('clamps bar height so the graph stays reachable', async () => {
@@ -159,5 +159,33 @@ describe('App', () => {
     }
     expect(Number(resizer.getAttribute('aria-valuenow'))).toBe(max)
     expect(screen.getByRole('img', { name: 'Original state diagram' })).toBeInTheDocument()
+  })
+
+  it('keeps each resizer wired to its own panel after dock changes', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    await user.click(screen.getByRole('button', { name: /toggle definition editor/i }))
+    await user.click(screen.getByRole('button', { name: /hide partition panel/i }))
+
+    const editorResizer = () => screen.getByRole('separator', { name: /definition editor/i })
+    const partitionResizer = () =>
+      screen.getByRole('separator', { name: /partition panel|animation panel/i })
+
+    fireEvent.keyDown(editorResizer(), { key: 'ArrowLeft' })
+    expect(window.localStorage.getItem('layout.v2.editor.width')).toBe('504')
+
+    await user.click(screen.getByRole('button', { name: /dock definition editor at right/i }))
+    fireEvent.keyDown(editorResizer(), { key: 'ArrowLeft' })
+    expect(window.localStorage.getItem('layout.v2.editor.width')).toBe('520')
+
+    await user.click(screen.getByRole('button', { name: /show partition panel/i }))
+    await user.click(screen.getByRole('button', { name: /dock partition refinement panel at left/i }))
+    fireEvent.keyDown(partitionResizer(), { key: 'ArrowLeft' })
+    expect(window.localStorage.getItem('layout.v2.panel.width')).toBe('400')
+    expect(window.localStorage.getItem('layout.v2.editor.width')).toBe('520')
+
+    fireEvent.keyDown(editorResizer(), { key: 'ArrowLeft' })
+    expect(window.localStorage.getItem('layout.v2.editor.width')).toBe('320')
+    expect(window.localStorage.getItem('layout.v2.panel.width')).toBe('400')
   })
 })

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface ResizerProps {
   value: number
@@ -28,6 +28,15 @@ export function Resizer({
   const [dragging, setDragging] = useState(false)
 
   const horizontal = orientation === 'horizontal'
+
+  const prevOrientation = useRef(orientation)
+  useEffect(() => {
+    if (prevOrientation.current !== orientation) {
+      startRef.current = null
+      setDragging(false)
+      prevOrientation.current = orientation
+    }
+  }, [orientation])
 
   const applyDelta = useCallback(
     (delta: number, from: number) => {

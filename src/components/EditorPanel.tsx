@@ -38,7 +38,7 @@ export function EditorPanel({ dock, onDockChange, onClose, style }: EditorPanelP
       data-dock={dock}
       style={style}
       className={`flex min-h-0 min-w-0 shrink-0 flex-col bg-surface-2 ${edgeClass(dock)} ${
-        column ? 'overflow-hidden lg:max-w-[45vw]' : 'max-h-[50vh] overflow-hidden lg:max-h-[45vh]'
+        column ? 'overflow-hidden' : 'max-h-[50vh] overflow-hidden lg:max-h-none'
       }`}
     >
       <header className="flex shrink-0 items-center gap-2 border-b border-line px-4 py-2.5">

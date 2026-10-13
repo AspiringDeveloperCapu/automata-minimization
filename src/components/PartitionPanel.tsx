@@ -25,7 +25,7 @@ export function PartitionPanel({ dock, onDockChange, children, style }: Partitio
       data-dock={dock}
       style={style}
       className={`flex min-h-0 min-w-0 shrink-0 flex-col bg-surface-2 ${edgeClass(dock)} ${
-        column ? 'lg:max-w-[45vw]' : 'max-h-[50vh] lg:max-h-[45vh]'
+        column ? '' : 'max-h-[50vh] lg:max-h-none'
       }`}
     >
       <header className="flex shrink-0 items-center gap-2 border-b border-line px-4 py-2.5">

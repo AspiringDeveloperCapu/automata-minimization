@@ -28,25 +28,25 @@ export default function App() {
 
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
-  const [editorDock, setEditorDock] = useDock('editor.dock', 'left')
-  const [panelDock, setPanelDock] = useDock('panel.dock', 'right')
+  const [editorDock, setEditorDock] = useDock('layout.v2.editor.dock', 'left')
+  const [panelDock, setPanelDock] = useDock('layout.v2.panel.dock', 'right')
 
-  const [editorWidth, setEditorWidth, resetEditorWidth] = usePersistentWidth('editor.width', {
+  const [editorWidth, setEditorWidth, resetEditorWidth] = usePersistentWidth('layout.v2.editor.width', {
     default: 520,
     min: 320,
     max: 720,
   })
-  const [panelWidth, setPanelWidth, resetPanelWidth] = usePersistentWidth('panel.right', {
+  const [panelWidth, setPanelWidth, resetPanelWidth] = usePersistentWidth('layout.v2.panel.width', {
     default: 520,
     min: 400,
     max: 960,
   })
-  const [editorHeight, setEditorHeight, resetEditorHeight] = usePersistentWidth('editor.height', {
+  const [editorHeight, setEditorHeight, resetEditorHeight] = usePersistentWidth('layout.v2.editor.height', {
     default: 320,
     min: 160,
     max: 560,
   })
-  const [panelHeight, setPanelHeight, resetPanelHeight] = usePersistentWidth('panel.height', {
+  const [panelHeight, setPanelHeight, resetPanelHeight] = usePersistentWidth('layout.v2.panel.height', {
     default: 280,
     min: 160,
     max: 560,
@@ -76,17 +76,21 @@ export default function App() {
 
   const graphMinH = Math.max(240, Math.round(viewport.height / 2))
   const maxBarSpace = Math.max(160, viewport.height - topBarH - graphMinH)
-  const editorHeightMax = Math.max(160, maxBarSpace - (panelVisible && panelIsBar ? panelHeight : 0))
-  const panelHeightMax = Math.max(160, maxBarSpace - (editorOpen && editorIsBar ? editorHeight : 0))
+  const editorHeightMax = Math.max(160, maxBarSpace - (panelVisible && panelIsBar ? 160 : 0))
+  const panelHeightMax = Math.max(160, maxBarSpace - (editorOpen && editorIsBar ? 160 : 0))
   const editorHeightNow = Math.min(editorHeight, editorHeightMax)
   const panelHeightNow = Math.min(panelHeight, panelHeightMax)
 
   const graphMinW = Math.max(320, Math.round(viewport.width * 0.35))
   const maxColSpace = Math.max(320, viewport.width - graphMinW)
-  const editorWidthMax = Math.max(320, maxColSpace - (panelVisible && panelIsCol ? panelWidth : 0))
-  const panelWidthMax = Math.max(400, maxColSpace - (editorOpen && editorIsCol ? editorWidth : 0))
+  const editorWidthMax = Math.max(320, maxColSpace - (panelVisible && panelIsCol ? 400 : 0))
+  const panelWidthMax = Math.max(400, maxColSpace - (editorOpen && editorIsCol ? 320 : 0))
   const editorWidthNow = Math.min(editorWidth, editorWidthMax)
   const panelWidthNow = Math.min(panelWidth, panelWidthMax)
+
+  const clampSet =
+    (setter: (value: number) => void, max: number) => (value: number) =>
+      setter(Math.min(value, max))
 
   const issues = useMemo(() => validateDfa(dfa), [dfa])
   const errors = issues.filter((i) => i.level === 'error')
@@ -159,7 +163,7 @@ export default function App() {
             min={160}
             max={editorHeightMax}
             defaultValue={320}
-            onChange={setEditorHeight}
+            onChange={clampSet(setEditorHeight, editorHeightMax)}
             onReset={resetEditorHeight}
           />
         </>
@@ -181,7 +185,7 @@ export default function App() {
             min={160}
             max={panelHeightMax}
             defaultValue={280}
-            onChange={setPanelHeight}
+            onChange={clampSet(setPanelHeight, panelHeightMax)}
             onReset={resetPanelHeight}
           />
         </>
@@ -202,7 +206,7 @@ export default function App() {
               min={320}
               max={editorWidthMax}
               defaultValue={520}
-              onChange={setEditorWidth}
+              onChange={clampSet(setEditorWidth, editorWidthMax)}
               onReset={resetEditorWidth}
             />
           </>
@@ -223,7 +227,7 @@ export default function App() {
               min={400}
               max={panelWidthMax}
               defaultValue={520}
-              onChange={setPanelWidth}
+              onChange={clampSet(setPanelWidth, panelWidthMax)}
               onReset={resetPanelWidth}
             />
           </>
@@ -248,7 +252,7 @@ export default function App() {
               min={400}
               max={panelWidthMax}
               defaultValue={520}
-              onChange={setPanelWidth}
+              onChange={clampSet(setPanelWidth, panelWidthMax)}
               onReset={resetPanelWidth}
             />
             <PartitionPanel
@@ -270,7 +274,7 @@ export default function App() {
               min={320}
               max={editorWidthMax}
               defaultValue={520}
-              onChange={setEditorWidth}
+              onChange={clampSet(setEditorWidth, editorWidthMax)}
               onReset={resetEditorWidth}
             />
             <EditorPanel
@@ -293,7 +297,7 @@ export default function App() {
             min={160}
             max={panelHeightMax}
             defaultValue={280}
-            onChange={setPanelHeight}
+            onChange={clampSet(setPanelHeight, panelHeightMax)}
             onReset={resetPanelHeight}
           />
           <PartitionPanel dock={panelDock} onDockChange={setPanelDock} style={panelStyle(panelHeightNow)}>
@@ -312,7 +316,7 @@ export default function App() {
             min={160}
             max={editorHeightMax}
             defaultValue={320}
-            onChange={setEditorHeight}
+            onChange={clampSet(setEditorHeight, editorHeightMax)}
             onReset={resetEditorHeight}
           />
           <EditorPanel
